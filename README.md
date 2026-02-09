@@ -58,8 +58,8 @@ Ran two separate nmap scans against the same set of ports (21, 53, 80, 1999) on 
 
 ### Findings
 Analysis of the packet captures confirmed the following:
-*   **TCP Scans (Stateful): The capture clearly showed the TCP three-way handshake (SYN, SYN-ACK, ACK) for open ports. For closed ports, the target responded with a RST (Reset) packet. This makes TCP scans highly reliable.
-*   **UDP Scans (Stateless): The capture showed that for closed ports, the target machine correctly responded with ICMP "Port Unreachable" messages. For open ports, there was simply no response. This highlights a key defensive consideration: if a firewall blocks outgoing ICMP traffic, a UDP scan will incorrectly label all ports as open|filtered, making the scan results unreliable and noisy.
+*   TCP Scans (Stateful): The capture clearly showed the TCP three-way handshake (SYN, SYN-ACK, ACK) for open ports. For closed ports, the target responded with a RST (Reset) packet. This makes TCP scans highly reliable.
+*   UDP Scans (Stateless): The capture showed that for closed ports, the target machine correctly responded with ICMP "Port Unreachable" messages. For open ports, there was simply no response. This highlights a key defensive consideration: if a firewall blocks outgoing ICMP traffic, a UDP scan will incorrectly label all ports as open|filtered, making the scan results unreliable and noisy.
 
 ### Output
 The nmap output from both scans is included in this repository, clearly showing the different results for the same set of ports.

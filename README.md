@@ -29,6 +29,7 @@ I constructed a bash one-liner that chains several commands together:
 ### Command
 ```bash
 nmap -sn <target-subnet> | grep 'Nmap scan' | cut -d ' ' -f 5 > live-hosts.lst
+```
 
 # Service and Version Enumeration
 ### Objective
@@ -41,6 +42,7 @@ nmap with the -sV flag, which enables version detection. This powerful feature p
 
 ```bash
 nmap -sV <target-ip>
+```
 
 ### Output
 The scan produces a detailed list of open ports, the service name, and the specific version of the software running. An example of the output from a scan against a Metasploitable machine has been uploaded to this repository.

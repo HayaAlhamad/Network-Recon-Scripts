@@ -1,5 +1,3 @@
-# Network-Recon-Scripts
-A collection of scripts and command-line techniques for network discovery and service enumeration.
 # Network Reconnaissance Scripts & Techniques
 
 This repository documents a series of hands-on exercises in network reconnaissance and analysis. It contains a collection of scripts and command-line techniques for network discovery and service enumeration, including examples of using tools like `nmap`, `grep`, and `tcpdump` to perform host discovery, identify services, and analyze network protocol behavior.

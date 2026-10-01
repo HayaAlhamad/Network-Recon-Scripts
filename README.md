@@ -62,3 +62,48 @@ Analysis of the packet captures confirmed the following:
 ### Output
 The nmap output from both scans is included in this repository, clearly showing the different results for the same set of ports.
 (See tcp-udp-scan-results.png for the nmap output.)
+
+---
+
+## Defender's Side
+
+Reconnaissance is often the earliest visible stage of an attack, so I wanted to look at this from the other direction too:)
+
+### Spotting the Ping Sweep (`nmap -sn`)
+
+This scan generates a burst of ICMP Echo Requests (or ARP requests on a local subnet) to every host in the target range within a short time window.
+
+**What to look for:**
+- Firewall or IDS logs showing many ICMP requests from a single source IP in a short period
+- A network IDS (Suricata/Snort) firing an "ICMP sweep" or "ping scan" signature
+- NetFlow data showing one source briefly talking to many destinations on the same subnet
+
+**A rule to write:**
+> If a single source IP sends ICMP Echo Requests to more than 20 distinct hosts within 10 seconds, raise a "possible host discovery scan" alert.
+
+**How to respond:** First check whether the source is a known vulnerability scanner or admin box. If not, treat it as pre-attack reconnaissance, identify who owns the asset, and keep an eye out for follow-on port scans from the same source.
+
+### Spotting the Service/Version Scan (`nmap -sV`)
+
+This generates many connection attempts from one source to many ports on one host, often with unusual TCP flag patterns and short-lived connections, since `-sV` sends protocol-specific probes instead of normal application traffic.
+
+**What to look for:**
+- IDS signatures for "NMAP scripting engine" or "version detection probe"
+- A spike in connection attempts to closed or filtered ports in host logs
+- Malformed or unexpected requests in web/app logs if `-sV` probed an HTTP port
+
+**A rule to write:**
+> If a single source IP touches more than 20 distinct ports on one destination within 10 seconds, raise a "possible port/version scan" alert.
+
+**How to respond:** Correlate this with any ping sweep alert, since they often come from the same source. Check how critical the targeted host is, and escalate if the source is external or if scanning is followed by an actual exploitation attempt against something it found.
+
+### Using the TCP vs. UDP Difference as a Detection Signal
+
+The same TCP/UDP asymmetry documented above also works as a defensive signal:
+
+- **TCP scans** are easy to fingerprint: a flood of SYNs with no completed handshake (no ACK following the SYN-ACK) stands out from normal traffic, which completes the three-way handshake.
+- **UDP scans** are noisier for the scanner but quieter in logs: a spike in outbound ICMP "Port Unreachable" messages from my own hosts would tell me something is probing many UDP ports, even if my firewall swallows the original request.
+
+### What to take from this
+
+Knowing which IPs and schedules are expected to scan the network matters as much as the detection rule itself.
